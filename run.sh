@@ -76,6 +76,9 @@ function run_test {
 	wait $pid1
 	wait $pid3
 
+	download=$(cat download.tmp | jq -r '.end.sum_received.bits_per_second')
+	upload=$(cat upload.tmp | jq -r '.end.sum_sent.bits_per_second')
+
 	# write to log
 	location=$(<location.tmp)
 }
