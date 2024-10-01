@@ -90,6 +90,11 @@ function run_test {
 		>&2 printf "Unable to get location data.\nMake sure you have location enabled and set up.\n"
 		exit 1
 	fi
+
+	download_mb=$(awk "BEGIN {printf \"%.1f\", $download / 1000000}")
+	upload_mb=$(awk "BEGIN {printf \"%.1f\", $upload / 1000000}")
+
+	echo "$location: $download_mb Mb/s download, $upload_mb Mb/s upload"
 }
 
 check_dependencies;
