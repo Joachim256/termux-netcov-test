@@ -33,6 +33,19 @@ function run_test {
 		upload_cmd+=" -p $IPERF3_SERVER_PORT"
 	fi
 
+	if [[ -n "$IPERF3_USERNAME" && -n "$IPERF3_PASSWORD"]]; then
+		if [ ! -f server-public-key.pem ]; then
+			printf "No public key was found.\niperf3 requires the public key of the server. Put it in this directory under the name 'server-public-key.pem' or try disabling authentication.\n" >> /dev/stderr
+			exit 1
+		fi
+
+		download_cmd+=" --username $IPERF3_USERNAME"
+		upload_cmd+=" --username $IPERF3_USERNAME"
+		
+		download_cmd+=" --rsa-public-key-path server-public-key.pem"
+		upload_cmd+=" --rsa-public-key-path server-public-key.pem"
+	fi
+
 	# run iperf3 speed test
 	eval $download_cmd \
 		> download.tmp 2> error.tmp &
