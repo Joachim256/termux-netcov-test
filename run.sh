@@ -2,17 +2,17 @@
 
 function check_dependencies {
 	if ! which termux-location > /dev/null 2>&1; then
-		echo "Termux tools aren't installed" >> /dev/stderr
+		>&2 echo "Termux tools aren't installed"
 		exit 1
 	fi
 	if ! which iperf3 > /dev/null 2>&1; then
-		echo "iperf3 isn't installed" >> /dev/stderr
+		>&2 echo "iperf3 isn't installed"
 		exit 1
 	fi
 	
 	source .env
 	if [ -z "$IPERF3_SERVER" ]; then
-		printf "Iperf3 server wasn't specified.\n Use the IPERF3_SERVER and IPERF3_SERVER_PORT environment variables.\n" >> /dev/stderr
+		>&2 printf "Iperf3 server wasn't specified.\n Use the IPERF3_SERVER and IPERF3_SERVER_PORT environment variables.\n"
 		exit 1
 	fi
 }
@@ -35,7 +35,7 @@ function run_test {
 
 	if [[ -n "$IPERF3_USERNAME" && -n "$IPERF3_PASSWORD" ]]; then
 		if [ ! -f server-public-key.pem ]; then
-			printf "No public key was found.\niperf3 requires the public key of the server. Put it in this directory under the name 'server-public-key.pem' or try disabling authentication.\n" >> /dev/stderr
+			>&2 printf "No public key was found.\niperf3 requires the public key of the server. Put it in this directory under the name 'server-public-key.pem' or try disabling authentication.\n"
 			exit 1
 		fi
 
@@ -55,16 +55,16 @@ function run_test {
 	
 	# check for authentication errors
 	if [[ "$(<error.tmp)" == "iperf3: error:80000002:system library::No such file or directory"* ]]; then
-		printf "No server-public-key.pem present.\nYou need to put the public key of the server into this directory." >> /dev/stderr
+		>&2 printf "No server-public-key.pem present.\nYou need to put the public key of the server into this directory."
 		exit 1
 	fi
 	if [[ "$(<error.tmp)" == "iperf3: error:1E08010C:DECODER routines::unsupported"* ]]; then
-		printf "Invalid server-public-key.pem.\nMake sure you specified a valid public key for the server." >> /dev/stderr
+		>&2 printf "Invalid server-public-key.pem.\nMake sure you specified a valid public key for the server."
 		exit 1
 	fi
 
 	if [ "$(cat download.tmp | jq -r '.error')" == "test authorization failed" ]; then
-		printf "Authorization failed.\nMake sure you provided correct username, password and server public key." >> /dev/stderr
+		>&2 printf "Authorization failed.\nMake sure you provided correct username, password and server public key."
 		exit 1
 	fi
 	
