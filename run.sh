@@ -15,7 +15,7 @@ function run_test {
 	# get location
 	termux-location | \
 		jq -r '(.latitude | tostring) + "," + (.longitude | tostring)' \
-		> location.tmp
+		> location.tmp &
 	pid1=$!
 
 	# run iperf3 speed test
