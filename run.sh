@@ -2,11 +2,11 @@
 
 function check_dependencies {
 	if ! which termux-location > /dev/null 2>&1; then
-		echo "Termux tools aren't installed"
+		echo "Termux tools aren't installed" >> /dev/stderr
 		exit 1
 	fi
 	if ! which iperf3 > /dev/null 2>&1; then
-		echo "iperf3 isn't installed"
+		echo "iperf3 isn't installed" >> /dev/stderr
 		exit 1
 	fi
 }
