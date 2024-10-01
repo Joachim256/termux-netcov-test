@@ -67,6 +67,10 @@ function run_test {
 		>&2 printf "Authorization failed.\nMake sure you provided correct username, password and server public key."
 		exit 1
 	fi
+	if [ "$(cat download.tmp | jq -r '.error')" == "the server is busy running a test. try again later" ]; then
+		>&2 printf "The specified iperf3 server is busy.\nTry a different server. Use a private server for maximum reliability.\n"
+		exit 2
+	fi
 	
 	eval $upload_cmd \
 		> upload.tmp 2> error.tmp &
