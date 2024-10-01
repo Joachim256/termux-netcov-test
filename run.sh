@@ -53,6 +53,21 @@ function run_test {
 
 	wait $pid2
 	
+	# check for authentication errors
+	if [[ "$(<error.tmp)" == "iperf3: error:80000002:system library::No such file or directory"* ]]; then
+		printf "No server-public-key.pem present.\nYou need to put the public key of the server into this directory." >> /dev/stderr
+		exit 1
+	fi
+	if [[ "$(<error.tmp)" == "iperf3: error:1E08010C:DECODER routines::unsupported"* ]]; then
+		printf "Invalid server-public-key.pem.\nMake sure you specified a valid public key for the server." >> /dev/stderr
+		exit 1
+	fi
+
+	if [ "$(cat download.tmp | jq -r '.error')" == "test authorization failed" ]; then
+		printf "Authorization failed.\nMake sure you provided correct username, password and server public key." >> /dev/stderr
+		exit 1
+	fi
+	
 	eval $upload_cmd \
 		> upload.tmp 2> error.tmp &
 	pid3=$!
