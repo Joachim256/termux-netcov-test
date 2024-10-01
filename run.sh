@@ -9,6 +9,12 @@ function check_dependencies {
 		echo "iperf3 isn't installed" >> /dev/stderr
 		exit 1
 	fi
+	
+	source .env
+	if [ -z "$IPERF3_SERVER" ]; then
+		printf "Iperf3 server wasn't specified.\n Use the IPERF3_SERVER and IPERF3_SERVER_PORT environment variables.\n" >> /dev/stderr
+		exit 1
+	fi
 }
 
 function run_test {
