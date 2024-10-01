@@ -18,12 +18,29 @@ function run_test {
 		> location.tmp &
 	pid1=$!
 
+	# prepare command
+	download_cmd="iperf3 -c $IPERF3_SERVER -t 15 -i0 -R -J"
+	upload_cmd="iperf3 -c $IPERF3_SERVER -t 15 -i0 -J"
+
+	if [[ -n "$IPERF3_SERVER_PORT" ]]; then
+		download_cmd+=" -p $IPERF3_SERVER_PORT"
+		upload_cmd+=" -p $IPERF3_SERVER_PORT"
+	fi
+
 	# run iperf3 speed test
+	eval $download_cmd \
+		> download.tmp 2> error.tmp &
+	pid2=$!
+
+	wait $pid2
 	
+	eval $upload_cmd \
+		> upload.tmp 2> error.tmp &
+	pid3=$!
 
 	# wait for both to complete
 	wait $pid1
-	#wait $pid2
+	wait $pid3
 
 	# write to log
 	location=$(<location.tmp)
