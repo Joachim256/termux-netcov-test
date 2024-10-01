@@ -19,7 +19,7 @@ function check_dependencies {
 
 function run_test {
 	# get location
-	termux-location | \
+	timeout 30 termux-location | \
 		jq -r '(.latitude | tostring) + "," + (.longitude | tostring)' \
 		> location.tmp &
 	pid1=$!
@@ -81,6 +81,11 @@ function run_test {
 
 	# write to log
 	location=$(<location.tmp)
+
+	if [ -z "$location" ]; then
+		>&2 printf "Unable to get location data.\nMake sure you have location enabled and set up.\n"
+		exit 1
+	fi
 }
 
 check_dependencies;
